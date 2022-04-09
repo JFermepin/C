@@ -1,6 +1,6 @@
-# Algoritmos y Estructuras de Datos <br>
-Curso: K1253
-Año: 2022
-Legajo: 174.412-4
-Nombre: Jeronimo
-Apellido: Fermepin Galdo
+# Algoritmos y Estructuras de Datos
+**Curso:** K1253 <br>
+**Año:** 2022 <br>
+**Legajo:** 174.412-4 <br>
+**Nombre:** Jeronimo <br>
+**Apellido:** Fermepin Galdo 
