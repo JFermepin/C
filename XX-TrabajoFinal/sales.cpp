@@ -17,14 +17,18 @@ using namespace std;
 
 using Data = array<array<array<int,12>,3>,4>;	//REGION - VENDEDOR - MES
 
+using MejoresVendedores = array<vector<int>,4>;
+
 /*****************
 ***	PROTOTIPOS ***
 ******************/
 
-void CargarDatosDesdeTXT (Data&);
-void CargarDatosDesdeBIN (Data&);
-void CrearBin (Data); //No necesito pasarle la referencia - no va const (?)
-void CrearTXT (Data); //No necesito pasarle la referencia - no va const(?)
+void CargarDatosDesdeTXT (Data&, MejoresVendedores&);
+void CargarDatosDesdeBIN (Data&, MejoresVendedores&);
+void CrearBin (Data, MejoresVendedores); //No necesito pasarle la referencia - no va const (?)
+void CrearTXT (Data, MejoresVendedores); //No necesito pasarle la referencia - no va const(?)
+unsigned TotalDeVentas(Data, int, int); //Para una region y un vendedor especifico - no necesito pasarle la referencia - no va const(?)
+void GuardarMejoresVendedores (Data, MejoresVendedores&);
 string NombreRegion(int);
 string NombreMes(int);
 string NombreVendedor(int);
@@ -37,8 +41,11 @@ string NombreVendedor(int);
 int main()
 {
     Data data{};
-    //CargarDatosDesdeTXT (data);
-    CargarDatosDesdeBIN (data);
+    MejoresVendedores mejoresVendedores{};
+
+    //CargarDatosDesdeTXT (data, mejoresVendedores);
+    CargarDatosDesdeBIN (data, mejoresVendedores);
+
 	return 0;
 }
 
@@ -46,16 +53,17 @@ int main()
 ***	FUNCIONES - DEFNICIONES ***
 *******************************/
 
-void CargarDatosDesdeTXT (Data& data){
+void CargarDatosDesdeTXT (Data& data, MejoresVendedores& mejoresVendedores){
 
     for(int region{}, vendedor{}, mes{}, importe{}; cin >> region >> vendedor >> mes >> importe; )
         data.at(region-1).at(vendedor-1).at(mes-1) += importe;
 
-    CrearBin(data);
+    GuardarMejoresVendedores(data, mejoresVendedores);
+    CrearBin(data, mejoresVendedores);
 }
 
 
-void CargarDatosDesdeBIN (Data& data){
+void CargarDatosDesdeBIN (Data& data, MejoresVendedores& mejoresVendedores){
 
     ifstream archivoBin;
     archivoBin.open("data.bin", ios::in | ios::binary);
@@ -66,11 +74,12 @@ void CargarDatosDesdeBIN (Data& data){
 	}
 	archivoBin.close();
 
-    CrearTXT(data);
+    GuardarMejoresVendedores(data, mejoresVendedores);
+    CrearTXT(data, mejoresVendedores);
 
 }
 
-void CrearBin (Data data){
+void CrearBin (Data data, MejoresVendedores mejoresVendedores){
 
     ofstream archivoSalida;
     archivoSalida.open("out.bin", ios::out | ios::binary);
@@ -78,12 +87,12 @@ void CrearBin (Data data){
     archivoSalida.close();
 }
 
-void CrearTXT (Data data){
+void CrearTXT (Data data, MejoresVendedores mejoresVendedores){
 
     ofstream archivoSalida;
     archivoSalida.open("out.txt", ios::out);
 
-    for(int r{}; r < 4; ++r){
+    for(int r{}; r < 4 ; ++r){
 
         archivoSalida << "Region: " << NombreRegion(r) << '\n' << '\n';
 
@@ -93,14 +102,27 @@ void CrearTXT (Data data){
 
             for(int m{}; m < 12 ; ++m){
 
-            archivoSalida << '\t' << '\t' << "Total de " << NombreMes(m) << ": " << data[r][v][m] << '\n';
+            archivoSalida << '\t' << '\t' << "Total de " << NombreMes(m) << ": " << data.at(r).at(v).at(m) << '\n';
 
             }
+
+            archivoSalida << '\t' << '\t' << "Total de ventas en el año:" << TotalDeVentas(data, r, v) << '\n';
 
             archivoSalida << '\n';
         }
 
         archivoSalida  << "-----------------------------------" << '\n' << '\n';
+    }
+
+    for(int r{}; r < 4 ; ++r){
+
+        archivoSalida << "El/los mejor/es vendedor/es de la region " << NombreRegion(r) << " fue/ron: ";
+
+            for(int v ; v < mejoresVendedores.at(r).size() ; ++v)
+                archivoSalida << NombreVendedor(mejoresVendedores.at(r).at(v));
+
+         archivoSalida << '\n';
+
     }
 
     archivoSalida.close();
@@ -123,4 +145,35 @@ string NombreVendedor(int vendedor)
 {
 	const array<string, 3> vendedores{"Nicolas Filippi", "Jeronimo Fermepin", "Enrique Marques"}; //Const por que es constante (hace falta static?) 
 	return vendedores.at(vendedor);
+}
+
+unsigned TotalDeVentas(Data data, int region, int vendedor){
+
+    int total{};
+    for(int mes{} ; mes < 12 ; ++mes)
+        total += data.at(region).at(vendedor).at(mes);
+    return total;
+
+}
+
+void GuardarMejoresVendedores (Data data, MejoresVendedores& mejoresVendedores){
+
+    unsigned max{};
+
+    for(int r{} ; r < 4 ; ++r){
+
+        for(int v{}; v < 3 ; ++v){
+
+            if(TotalDeVentas(data,r,v)>max)
+            {
+                mejoresVendedores.at(r).clear();
+                max = TotalDeVentas(data,r,v);
+                mejoresVendedores.at(r).push_back(v);
+            }
+            else if (TotalDeVentas(data,r,v)==max)
+            {
+               mejoresVendedores.at(r).push_back(v); 
+            }
+        }
+    }
 }
