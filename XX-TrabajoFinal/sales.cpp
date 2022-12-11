@@ -17,7 +17,7 @@ using namespace std;
 
 using Data = array<array<array<int,12>,3>,4>;	//REGION - VENDEDOR - MES
 
-using MejoresVendedores = array<vector<int>,4>;
+using MejoresVendedores = array<vector<int>,4>; //Mejores vendedores para cada region
 
 /*****************
 ***	PROTOTIPOS ***
@@ -106,7 +106,7 @@ void CrearTXT (Data data, MejoresVendedores mejoresVendedores){
 
             }
 
-            archivoSalida << '\t' << '\t' << "Total de ventas en el año:" << TotalDeVentas(data, r, v) << '\n';
+            archivoSalida << '\t' << '\t' << "Total de ventas en el año: " << TotalDeVentas(data, r, v) << '\n';
 
             archivoSalida << '\n';
         }
@@ -118,7 +118,7 @@ void CrearTXT (Data data, MejoresVendedores mejoresVendedores){
 
         archivoSalida << "El/los mejor/es vendedor/es de la region " << NombreRegion(r) << " fue/ron: ";
 
-            for(int v ; v < mejoresVendedores.at(r).size() ; ++v)
+            for(int v{} ; v < mejoresVendedores.at(r).size() ; ++v)
                 archivoSalida << NombreVendedor(mejoresVendedores.at(r).at(v));
 
          archivoSalida << '\n';
@@ -166,11 +166,10 @@ void GuardarMejoresVendedores (Data data, MejoresVendedores& mejoresVendedores){
 
             if(TotalDeVentas(data,r,v)>max)
             {
-                mejoresVendedores.at(r).clear();
                 max = TotalDeVentas(data,r,v);
-                mejoresVendedores.at(r).push_back(v);
+                mejoresVendedores.at(r).clear();
             }
-            else if (TotalDeVentas(data,r,v)==max)
+            if (TotalDeVentas(data,r,v)>=max)
             {
                mejoresVendedores.at(r).push_back(v); 
             }

@@ -14,7 +14,7 @@ Region: Norte
 		Total de Octubre: 5000
 		Total de Noviembre: 1026
 		Total de Diciembre: 11000
-		Total de ventas en el año:47400
+		Total de ventas en el año: 47400
 
 	Vendedor: Jeronimo Fermepin
 
@@ -30,7 +30,7 @@ Region: Norte
 		Total de Octubre: 5000
 		Total de Noviembre: 7026
 		Total de Diciembre: 71000
-		Total de ventas en el año:220868
+		Total de ventas en el año: 220868
 
 	Vendedor: Enrique Marques
 
@@ -46,7 +46,7 @@ Region: Norte
 		Total de Octubre: 5000
 		Total de Noviembre: 3026
 		Total de Diciembre: 31000
-		Total de ventas en el año:105369
+		Total de ventas en el año: 105369
 
 -----------------------------------
 
@@ -66,7 +66,7 @@ Region: Este
 		Total de Octubre: 5000
 		Total de Noviembre: 6026
 		Total de Diciembre: 61000
-		Total de ventas en el año:127570
+		Total de ventas en el año: 127570
 
 	Vendedor: Jeronimo Fermepin
 
@@ -82,7 +82,7 @@ Region: Este
 		Total de Octubre: 5000
 		Total de Noviembre: 6026
 		Total de Diciembre: 61000
-		Total de ventas en el año:127571
+		Total de ventas en el año: 127571
 
 	Vendedor: Enrique Marques
 
@@ -98,7 +98,7 @@ Region: Este
 		Total de Octubre: 5000
 		Total de Noviembre: 1026
 		Total de Diciembre: 11000
-		Total de ventas en el año:49172
+		Total de ventas en el año: 49172
 
 -----------------------------------
 
@@ -118,7 +118,7 @@ Region: Sur
 		Total de Octubre: 5000
 		Total de Noviembre: 1026
 		Total de Diciembre: 11000
-		Total de ventas en el año:32067
+		Total de ventas en el año: 32067
 
 	Vendedor: Jeronimo Fermepin
 
@@ -134,7 +134,7 @@ Region: Sur
 		Total de Octubre: 5000
 		Total de Noviembre: 2026
 		Total de Diciembre: 21000
-		Total de ventas en el año:306353
+		Total de ventas en el año: 306353
 
 	Vendedor: Enrique Marques
 
@@ -150,7 +150,7 @@ Region: Sur
 		Total de Octubre: 5000
 		Total de Noviembre: 1026
 		Total de Diciembre: 11000
-		Total de ventas en el año:32071
+		Total de ventas en el año: 32071
 
 -----------------------------------
 
@@ -170,7 +170,7 @@ Region: Oeste
 		Total de Octubre: 5000
 		Total de Noviembre: 4026
 		Total de Diciembre: 41000
-		Total de ventas en el año:89373
+		Total de ventas en el año: 89373
 
 	Vendedor: Jeronimo Fermepin
 
@@ -186,7 +186,7 @@ Region: Oeste
 		Total de Octubre: 5000
 		Total de Noviembre: 5026
 		Total de Diciembre: 51000
-		Total de ventas en el año:108471
+		Total de ventas en el año: 108471
 
 	Vendedor: Enrique Marques
 
@@ -202,11 +202,11 @@ Region: Oeste
 		Total de Octubre: 5000
 		Total de Noviembre: 5026
 		Total de Diciembre: 51000
-		Total de ventas en el año:108471
+		Total de ventas en el año: 108471
 
 -----------------------------------
 
-El/los mejor/es vendedor/es de la region Norte fue/ron: 
+El/los mejor/es vendedor/es de la region Norte fue/ron: Jeronimo Fermepin
 El/los mejor/es vendedor/es de la region Este fue/ron: 
-El/los mejor/es vendedor/es de la region Sur fue/ron: 
+El/los mejor/es vendedor/es de la region Sur fue/ron: Jeronimo Fermepin
 El/los mejor/es vendedor/es de la region Oeste fue/ron: 
