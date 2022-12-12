@@ -116,12 +116,21 @@ void CrearTXT (Data data, MejoresVendedores mejoresVendedores){
 
     for(int r{}; r < 4 ; ++r){
 
-        archivoSalida << "El/los mejor/es vendedor/es de la region " << NombreRegion(r) << " fue/ron: ";
-
+        if(mejoresVendedores.at(r).size()>1){ //si hay mas de uno
+        
+        archivoSalida << "Los mejores vendedores de la region " << NombreRegion(r) << " fueron: " << '\n';
             for(int v{} ; v < mejoresVendedores.at(r).size() ; ++v)
-                archivoSalida << NombreVendedor(mejoresVendedores.at(r).at(v));
+                archivoSalida << NombreVendedor(mejoresVendedores.at(r).at(v)) << '\n';
+        }
 
-         archivoSalida << '\n';
+        else{
+
+        archivoSalida << "El mejor vendedor de la region " << NombreRegion(r) << " fue: " << '\n';
+            for(int v{} ; v < mejoresVendedores.at(r).size() ; ++v)
+                archivoSalida << NombreVendedor(mejoresVendedores.at(r).at(v)) << '\n';
+        }
+
+        archivoSalida << '\n' << '\n';
 
     }
 
@@ -158,9 +167,9 @@ unsigned TotalDeVentas(Data data, int region, int vendedor){
 
 void GuardarMejoresVendedores (Data data, MejoresVendedores& mejoresVendedores){
 
-    unsigned max{};
-
     for(int r{} ; r < 4 ; ++r){
+
+        unsigned max{};
 
         for(int v{}; v < 3 ; ++v){
 

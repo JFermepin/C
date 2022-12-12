@@ -206,7 +206,20 @@ Region: Oeste
 
 -----------------------------------
 
-El/los mejor/es vendedor/es de la region Norte fue/ron: Jeronimo Fermepin
-El/los mejor/es vendedor/es de la region Este fue/ron: 
-El/los mejor/es vendedor/es de la region Sur fue/ron: Jeronimo Fermepin
-El/los mejor/es vendedor/es de la region Oeste fue/ron: 
+El mejor vendedor de la region Norte fue: 
+Jeronimo Fermepin
+
+
+El mejor vendedor de la region Este fue: 
+Jeronimo Fermepin
+
+
+El mejor vendedor de la region Sur fue: 
+Jeronimo Fermepin
+
+
+Los mejores vendedores de la region Oeste fueron: 
+Jeronimo Fermepin
+Enrique Marques
+
+
