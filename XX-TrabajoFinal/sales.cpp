@@ -9,15 +9,30 @@
 #include <cstring>
 #include <vector>
 
+/******************
+***	NAMESPACES ****
+*******************/
+
+using namespace std;
+
+/******************
+***	ESTRUCTURAS ***
+*******************/
+
+struct MejorVendedor{
+
+	unsigned contador{};
+	array<int, 12> lista{};
+
+};
+
 /*************
 ***	USINGS ***
 **************/
 
-using namespace std;
-
 using Data = array<array<array<int,12>,3>,4>;	//REGION - VENDEDOR - MES
-
-using MejoresVendedores = array<vector<int>,4>; //Mejores vendedores para cada region
+using VentasVendedorUno = vector<int>;
+using MejoresVendedores = array<MejorVendedor,4>;
 
 /*****************
 ***	PROTOTIPOS ***
@@ -25,10 +40,10 @@ using MejoresVendedores = array<vector<int>,4>; //Mejores vendedores para cada r
 
 void CargarDatosDesdeTXT (Data&, MejoresVendedores&);
 void CargarDatosDesdeBIN (Data&, MejoresVendedores&);
-void CrearBin (Data, MejoresVendedores); //No necesito pasarle la referencia - no va const (?)
-void CrearTXT (Data, MejoresVendedores); //No necesito pasarle la referencia - no va const(?)
-unsigned TotalDeVentas(Data, int, int); //Para una region y un vendedor especifico - no necesito pasarle la referencia - no va const(?)
-void GuardarMejoresVendedores (Data, MejoresVendedores&);
+void CrearBin (Data&); //No necesito pasarle la referencia - no va const (?)
+void CrearTXT (Data&, MejoresVendedores&); //No necesito pasarle la referencia - no va const(?)
+unsigned TotalDeVentas(Data&, int, int); //Para una region y un vendedor especifico - no necesito pasarle la referencia - no va const(?)
+void GuardarMejoresVendedores (Data&, MejoresVendedores&);
 string NombreRegion(int);
 string NombreMes(int);
 string NombreVendedor(int);
@@ -59,7 +74,7 @@ void CargarDatosDesdeTXT (Data& data, MejoresVendedores& mejoresVendedores){
         data.at(region-1).at(vendedor-1).at(mes-1) += importe;
 
     GuardarMejoresVendedores(data, mejoresVendedores);
-    CrearBin(data, mejoresVendedores);
+    CrearBin(data);
 }
 
 
@@ -68,10 +83,6 @@ void CargarDatosDesdeBIN (Data& data, MejoresVendedores& mejoresVendedores){
     ifstream archivoBin;
     archivoBin.open("data.bin", ios::in | ios::binary);
     archivoBin.read(reinterpret_cast<char *>(&data), sizeof(data));
-	for (int region{}, vendedor{}, mes{}, importe{}; cin >> region >> vendedor >> mes >> importe;)
-	{
-		data.at(region - 1).at(vendedor - 1).at(mes - 1) += importe;
-	}
 	archivoBin.close();
 
     GuardarMejoresVendedores(data, mejoresVendedores);
@@ -79,7 +90,7 @@ void CargarDatosDesdeBIN (Data& data, MejoresVendedores& mejoresVendedores){
 
 }
 
-void CrearBin (Data data, MejoresVendedores mejoresVendedores){
+void CrearBin (Data& data){
 
     ofstream archivoSalida;
     archivoSalida.open("out.bin", ios::out | ios::binary);
@@ -87,7 +98,7 @@ void CrearBin (Data data, MejoresVendedores mejoresVendedores){
     archivoSalida.close();
 }
 
-void CrearTXT (Data data, MejoresVendedores mejoresVendedores){
+void CrearTXT (Data& data, MejoresVendedores& mejoresVendedores){
 
     ofstream archivoSalida;
     archivoSalida.open("out.txt", ios::out);
@@ -116,18 +127,18 @@ void CrearTXT (Data data, MejoresVendedores mejoresVendedores){
 
     for(int r{}; r < 4 ; ++r){
 
-        if(mejoresVendedores.at(r).size()>1){ //si hay mas de uno
+        if(mejoresVendedores.at(r).contador>1){ //si hay mas de uno
         
-        archivoSalida << "Los mejores vendedores de la region " << NombreRegion(r) << " fueron: " << '\n';
-            for(int v{} ; v < mejoresVendedores.at(r).size() ; ++v)
-                archivoSalida << NombreVendedor(mejoresVendedores.at(r).at(v)) << '\n';
+            archivoSalida << "Los mejores vendedores de la region " << NombreRegion(r) << " fueron: " << '\n';
+                for(int v{} ; v < mejoresVendedores.at(r).contador ; ++v)
+                    archivoSalida << NombreVendedor(mejoresVendedores.at(r).lista.at(v)) << '\n';
         }
 
         else{
 
-        archivoSalida << "El mejor vendedor de la region " << NombreRegion(r) << " fue: " << '\n';
-            for(int v{} ; v < mejoresVendedores.at(r).size() ; ++v)
-                archivoSalida << NombreVendedor(mejoresVendedores.at(r).at(v)) << '\n';
+            archivoSalida << "El mejor vendedor de la region " << NombreRegion(r) << " fue: " << '\n';
+            archivoSalida << NombreVendedor(mejoresVendedores.at(r).lista.at(0)) << '\n';
+
         }
 
         archivoSalida << '\n' << '\n';
@@ -156,7 +167,7 @@ string NombreVendedor(int vendedor)
 	return vendedores.at(vendedor);
 }
 
-unsigned TotalDeVentas(Data data, int region, int vendedor){
+unsigned TotalDeVentas(Data& data, int region, int vendedor){
 
     int total{};
     for(int mes{} ; mes < 12 ; ++mes)
@@ -165,7 +176,7 @@ unsigned TotalDeVentas(Data data, int region, int vendedor){
 
 }
 
-void GuardarMejoresVendedores (Data data, MejoresVendedores& mejoresVendedores){
+void GuardarMejoresVendedores (Data& data, MejoresVendedores& mejoresVendedores){
 
     for(int r{} ; r < 4 ; ++r){
 
@@ -176,11 +187,13 @@ void GuardarMejoresVendedores (Data data, MejoresVendedores& mejoresVendedores){
             if(TotalDeVentas(data,r,v)>max)
             {
                 max = TotalDeVentas(data,r,v);
-                mejoresVendedores.at(r).clear();
+                mejoresVendedores.at(r).contador = 0;
+                mejoresVendedores.at(r).lista.fill(0);
             }
             if (TotalDeVentas(data,r,v)>=max)
             {
-               mejoresVendedores.at(r).push_back(v); 
+              	mejoresVendedores.at(r).lista.at(mejoresVendedores.at(r).contador) = v;
+			    mejoresVendedores.at(r).contador++;
             }
         }
     }
