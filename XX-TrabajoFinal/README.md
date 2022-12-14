@@ -6,8 +6,8 @@
 
 ```
 # g++ --version
-g++.exe (Rev10, Built by MSYS2 project) 11.2.0
-Copyright (C) 2021 Free Software Foundation, Inc.
+g++ (MinGW.org GCC Build-2) 9.2.0
+Copyright (C) 2019 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
@@ -16,11 +16,11 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 ##### Objetivos
 
-Diseñar un programa capaz de recibir un flujo de datos (y/o leer un archivo) para luego armar una matriz con todas ls ventas realizadas entre distintas sedes, clientes y meses.
+Diseñar un programa capaz de recibir un flujo de datos (y/o leer un archivo) para luego armar una matriz con todas las ventas realizadas entre distintas sedes, clientes y meses.
 
-Mostrar en pantalla un reporte de las mismas arupadas por los distintos tipos de categorías.
+Mostrar en pantalla un reporte de las mismas, agrupadas por los distintos tipos de categorías.
 
-Ademas debe poxer gusrdar en un archivo, la dstos binarios de la matriz.
+Ademas debe poxer guardar en un archivo, los datos binarios de la matriz.
 
 ##### Temas
 
@@ -31,28 +31,24 @@ Ademas debe poxer gusrdar en un archivo, la dstos binarios de la matriz.
 
 ### Instrucciones
 
-El código fuente debe ser previamente compilado para luego poder ser ejecutado a través de la consola.
+El programa es capaz de leer datos tanto desde un archivo .bin, como desde un archivo .txt, generando un archivo de salida (out.txt/out.bin) dependiendo el tipo de archivo que se haya leído.
 
-Primero se debe correr el comando de compilación:
+Para ejecutar el programa correctamente, primero se especifica que tipo de archivo se va a leer (mediante las funciones CargarDatosDesdeTXT o CargarDatosDesdeBIN).
 
-```
-# g++ --std=c++20 sales.cpp -o sales.exe
-```
+Una vez hecho esto, el código fuente debe ser previamente compilado para luego poder ser ejecutado a través de la consola.
 
-Luego con el ejecutable ya compilado, correrlo y verificar su funcionamiento.
-
-Como principal ejecucion se debe crear el archivo binario con la información de las ventas, para ello se debera utilizar el flujo de datos de entrada conectado a un archivo de texto.
+Se debe correr el comando de compilación:
 
 ```
-# .\sales.exe --loadDataFile < data.txt
+# g++ --std=c++2a sales.cpp -o sales.exe
 ```
 
-Este comando creará un archivo binario llamado "data.bin" que contendra toda la información necesaria para luego realizar todas las estadisticas.
-
-Al mismo tiempo se ejecutara el resto del programa que mostrata en pantalla tablas de estadistica con la información recopilada.
-
-Si lo que se quiere es unicamente mostrar las estadistincas, sin necesidad de recrear el archivo binario, solo basta con correr el ejecutable sin parametros ni flujos conectados.
+Luego con el ejecutable ya compilado, correrlo y verificar su funcionamiento, conectando el flujo de entrada de datos de entrada con el archivo en cuestión (en este caso, data.txt):
 
 ```
-# .\sales.exe
+# sales < data.txt
 ```
+
+Este comando creará un archivo binario llamado "out.bin" que contendra toda la información necesaria para luego realizar todas las estadisticas.
+
+Al mismo tiempo se ejecutara el resto del programa que mostrará en pantalla tablas de estadistica con la información recopilada.

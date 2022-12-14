@@ -95,7 +95,6 @@ void CargarDatosDesdeBIN (Data& data, MejoresVendedores& mejoresVendedores, Vent
     archivoBin.read(reinterpret_cast<char *>(&ventasPrimerVendedor), sizeof(ventasPrimerVendedor));
 	archivoBin.close();
 
-    GuardarMejoresVendedores(data, mejoresVendedores); //Si saco esta funcion, los mejores vendedores me quedan todos en Nicolas Filippi - No deberia de leerlo directamente en la linea 92?
     CrearTXT(data, mejoresVendedores);
 
 }
@@ -129,33 +128,35 @@ void CrearTXT (const Data& data, const MejoresVendedores& mejoresVendedores){
 
             }
 
-            archivoSalida << '\t' << '\t' << "Total de ventas en el año: " << TotalDeVentas(data, r, v) << '\n';
-
-            archivoSalida << '\n';
+            archivoSalida << '\t' << '\t' << "Total de ventas en el año: " << TotalDeVentas(data, r, v) << '\n' << '\n';
         }
 
-        archivoSalida  << "-----------------------------------" << '\n' << '\n';
-    }
-
-    for(int r{}; r < 4 ; ++r){
-
         if(mejoresVendedores.at(r).contador>1){ //si hay mas de uno
+
+            archivoSalida << "Los mejores vendedores fueron: ";
+
+            for(int v{} ; v < mejoresVendedores.at(r).contador ; ++v){
+
+                if(v == mejoresVendedores.at(r).contador-1){
+                    archivoSalida << NombreVendedor(mejoresVendedores.at(r).lista.at(v)) + '\n';
+                }
+                else{
+                    archivoSalida << NombreVendedor(mejoresVendedores.at(r).lista.at(v)) + ", ";
+                }
+
+            }
         
-            archivoSalida << "Los mejores vendedores de la region " << NombreRegion(r) << " fueron: " << '\n';
-                for(int v{} ; v < mejoresVendedores.at(r).contador ; ++v)
-                    archivoSalida << NombreVendedor(mejoresVendedores.at(r).lista.at(v)) << '\n';
         }
 
         else{
-
-            archivoSalida << "El mejor vendedor de la region " << NombreRegion(r) << " fue: " << '\n';
-            archivoSalida << NombreVendedor(mejoresVendedores.at(r).lista.at(0)) << '\n';
-
+            archivoSalida << "El mejor vendedor fue: " << NombreVendedor(mejoresVendedores.at(r).lista.at(0)) << '\n';
         }
 
         archivoSalida << '\n' << '\n';
 
+        archivoSalida  << "-----------------------------------" << '\n' << '\n';
     }
+
 
     archivoSalida.close();
 
@@ -227,32 +228,26 @@ void MostrarEstadisticas(const Data& data, const MejoresVendedores& mejoresVende
 
             }
 
-            cout << '\t' << '\t' << "Total de ventas en el ano: " << TotalDeVentas(data, r, v) << '\n';
-
-            cout << '\n';
+            cout << '\t' << '\t' << "Total de ventas en el ano: " << TotalDeVentas(data, r, v) << '\n' << '\n';
         }
-
-        cout  << "-----------------------------------" << '\n' << '\n';
-    }
-
-    for(int r{}; r < 4 ; ++r){
 
         if(mejoresVendedores.at(r).contador>1){ //si hay mas de uno
         
-            cout << "Los mejores vendedores de la region " << NombreRegion(r) << " fueron: " << '\n';
+            cout << '\t' << '\t' << "Los mejores vendedores de la region " << NombreRegion(r) << " fueron: " << '\n';
                 for(int v{} ; v < mejoresVendedores.at(r).contador ; ++v)
                     cout << NombreVendedor(mejoresVendedores.at(r).lista.at(v)) << '\n';
         }
 
         else{
 
-            cout << "El mejor vendedor de la region " << NombreRegion(r) << " fue: " << '\n';
+            cout << '\t' << '\t' << "El mejor vendedor de la region " << NombreRegion(r) << " fue: " << '\n';
             cout << NombreVendedor(mejoresVendedores.at(r).lista.at(0)) << '\n';
 
         }
 
         cout << '\n' << '\n';
-
     }
+
+    cout  << "-----------------------------------" << '\n' << '\n';
 
 }

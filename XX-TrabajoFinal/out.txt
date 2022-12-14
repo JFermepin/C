@@ -48,6 +48,9 @@ Region: Norte
 		Total de Diciembre: 31000
 		Total de ventas en el año: 105369
 
+El mejor vendedor fue: Jeronimo Fermepin
+
+
 -----------------------------------
 
 Region: Este
@@ -99,6 +102,9 @@ Region: Este
 		Total de Noviembre: 1026
 		Total de Diciembre: 11000
 		Total de ventas en el año: 49172
+
+El mejor vendedor fue: Jeronimo Fermepin
+
 
 -----------------------------------
 
@@ -152,6 +158,9 @@ Region: Sur
 		Total de Diciembre: 11000
 		Total de ventas en el año: 32071
 
+El mejor vendedor fue: Jeronimo Fermepin
+
+
 -----------------------------------
 
 Region: Oeste
@@ -204,22 +213,8 @@ Region: Oeste
 		Total de Diciembre: 51000
 		Total de ventas en el año: 108471
 
+Los mejores vendedores fueron: Jeronimo Fermepin, Enrique Marques
+
+
 -----------------------------------
-
-El mejor vendedor de la region Norte fue: 
-Jeronimo Fermepin
-
-
-El mejor vendedor de la region Este fue: 
-Jeronimo Fermepin
-
-
-El mejor vendedor de la region Sur fue: 
-Jeronimo Fermepin
-
-
-Los mejores vendedores de la region Oeste fueron: 
-Jeronimo Fermepin
-Enrique Marques
-
 
