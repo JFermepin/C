@@ -15,6 +15,7 @@ Region: Norte
 		Total de Noviembre: 1026
 		Total de Diciembre: 11000
 		Total de ventas en el año: 47400
+		Promedio de ventas: 3950
 
 	Vendedor: Jeronimo Fermepin
 
@@ -31,6 +32,7 @@ Region: Norte
 		Total de Noviembre: 7026
 		Total de Diciembre: 71000
 		Total de ventas en el año: 220868
+		Promedio de ventas: 18405
 
 	Vendedor: Enrique Marques
 
@@ -47,6 +49,7 @@ Region: Norte
 		Total de Noviembre: 3026
 		Total de Diciembre: 31000
 		Total de ventas en el año: 105369
+		Promedio de ventas: 8780
 
 El mejor vendedor fue: Jeronimo Fermepin
 
@@ -70,6 +73,7 @@ Region: Este
 		Total de Noviembre: 6026
 		Total de Diciembre: 61000
 		Total de ventas en el año: 127570
+		Promedio de ventas: 10630
 
 	Vendedor: Jeronimo Fermepin
 
@@ -86,6 +90,7 @@ Region: Este
 		Total de Noviembre: 6026
 		Total de Diciembre: 61000
 		Total de ventas en el año: 127571
+		Promedio de ventas: 10630
 
 	Vendedor: Enrique Marques
 
@@ -102,6 +107,7 @@ Region: Este
 		Total de Noviembre: 1026
 		Total de Diciembre: 11000
 		Total de ventas en el año: 49172
+		Promedio de ventas: 4097
 
 El mejor vendedor fue: Jeronimo Fermepin
 
@@ -125,6 +131,7 @@ Region: Sur
 		Total de Noviembre: 1026
 		Total de Diciembre: 11000
 		Total de ventas en el año: 32067
+		Promedio de ventas: 2672
 
 	Vendedor: Jeronimo Fermepin
 
@@ -141,6 +148,7 @@ Region: Sur
 		Total de Noviembre: 2026
 		Total de Diciembre: 21000
 		Total de ventas en el año: 306353
+		Promedio de ventas: 25529
 
 	Vendedor: Enrique Marques
 
@@ -157,6 +165,7 @@ Region: Sur
 		Total de Noviembre: 1026
 		Total de Diciembre: 11000
 		Total de ventas en el año: 32071
+		Promedio de ventas: 2672
 
 El mejor vendedor fue: Jeronimo Fermepin
 
@@ -180,6 +189,7 @@ Region: Oeste
 		Total de Noviembre: 4026
 		Total de Diciembre: 41000
 		Total de ventas en el año: 89373
+		Promedio de ventas: 7447
 
 	Vendedor: Jeronimo Fermepin
 
@@ -196,6 +206,7 @@ Region: Oeste
 		Total de Noviembre: 5026
 		Total de Diciembre: 51000
 		Total de ventas en el año: 108471
+		Promedio de ventas: 9039
 
 	Vendedor: Enrique Marques
 
@@ -212,6 +223,7 @@ Region: Oeste
 		Total de Noviembre: 5026
 		Total de Diciembre: 51000
 		Total de ventas en el año: 108471
+		Promedio de ventas: 9039
 
 Los mejores vendedores fueron: Jeronimo Fermepin, Enrique Marques
 

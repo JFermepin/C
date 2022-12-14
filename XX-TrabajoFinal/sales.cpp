@@ -43,6 +43,7 @@ void CargarDatosDesdeBIN (Data&, MejoresVendedores&, Ventas&);
 void CrearBin (Data&, MejoresVendedores&, Ventas&);
 void CrearTXT (const Data&, const MejoresVendedores&);
 unsigned TotalDeVentas(const Data&, int, int);
+int PromedioVentas (const Data&, int, int);
 void GuardarMejoresVendedores (Data&, MejoresVendedores&);
 void MostrarEstadisticas(const Data&, const MejoresVendedores&);
 string NombreRegion(int);
@@ -62,7 +63,8 @@ int main()
 
     //CargarDatosDesdeTXT (data, mejoresVendedores, ventasPrimerVendedor);
     CargarDatosDesdeBIN (data, mejoresVendedores, ventasPrimerVendedor);
-    MostrarEstadisticas(data, mejoresVendedores);
+    MostrarEstadisticas(data, mejoresVendedores); 
+    cout << ventasPrimerVendedor.size();
 
 	return 0;
 }
@@ -128,7 +130,8 @@ void CrearTXT (const Data& data, const MejoresVendedores& mejoresVendedores){
 
             }
 
-            archivoSalida << '\t' << '\t' << "Total de ventas en el año: " << TotalDeVentas(data, r, v) << '\n' << '\n';
+            archivoSalida << '\t' << '\t' << "Total de ventas en el año: " << TotalDeVentas(data, r, v) << '\n';
+            archivoSalida << '\t' << '\t' << "Promedio de ventas: " << PromedioVentas(data, r, v) << '\n' << '\n';
         }
 
         if(mejoresVendedores.at(r).contador>1){ //si hay mas de uno
@@ -228,7 +231,8 @@ void MostrarEstadisticas(const Data& data, const MejoresVendedores& mejoresVende
 
             }
 
-            cout << '\t' << '\t' << "Total de ventas en el año: " << TotalDeVentas(data, r, v) << '\n' << '\n';
+            cout << '\t' << '\t' << "Total de ventas en el ano: " << TotalDeVentas(data, r, v) << '\n';
+            cout << '\t' << '\t' << "Promedio de ventas: " << PromedioVentas(data, r, v) << '\n' << '\n';
         }
 
         if(mejoresVendedores.at(r).contador>1){ //si hay mas de uno
@@ -256,5 +260,11 @@ void MostrarEstadisticas(const Data& data, const MejoresVendedores& mejoresVende
 
         cout  << "-----------------------------------" << '\n' << '\n';
     }
+
+}
+
+int PromedioVentas (const Data& data, int region, int vendedor){
+
+    return TotalDeVentas(data, region, vendedor)/12;
 
 }
