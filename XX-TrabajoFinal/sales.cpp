@@ -164,19 +164,19 @@ void CrearTXT (const Data& data, const MejoresVendedores& mejoresVendedores){
 
 string NombreRegion (int region)
 {
-	const array<string, 4> regiones{"Norte", "Este", "Sur", "Oeste"}; //Const por que es constante (hace falta static?) 
+	const array<string, 4> regiones{"Norte", "Este", "Sur", "Oeste"};
 	return regiones.at(region);
 }
 
 string NombreMes (int mes)
 {
-	const array<string, 12> meses{"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"}; //Const por que es constante (hace falta static?) 
+	const array<string, 12> meses{"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"};
 	return meses.at(mes);
 }
 
 string NombreVendedor(int vendedor)
 {
-	const array<string, 3> vendedores{"Nicolas Filippi", "Jeronimo Fermepin", "Enrique Marques"}; //Const por que es constante (hace falta static?) 
+	const array<string, 3> vendedores{"Nicolas Filippi", "Jeronimo Fermepin", "Enrique Marques"};
 	return vendedores.at(vendedor);
 }
 
@@ -228,26 +228,33 @@ void MostrarEstadisticas(const Data& data, const MejoresVendedores& mejoresVende
 
             }
 
-            cout << '\t' << '\t' << "Total de ventas en el ano: " << TotalDeVentas(data, r, v) << '\n' << '\n';
+            cout << '\t' << '\t' << "Total de ventas en el año: " << TotalDeVentas(data, r, v) << '\n' << '\n';
         }
 
         if(mejoresVendedores.at(r).contador>1){ //si hay mas de uno
+
+            cout << "Los mejores vendedores fueron: ";
+
+            for(int v{} ; v < mejoresVendedores.at(r).contador ; ++v){
+
+                if(v == mejoresVendedores.at(r).contador-1){
+                    cout << NombreVendedor(mejoresVendedores.at(r).lista.at(v)) + '\n';
+                }
+                else{
+                    cout << NombreVendedor(mejoresVendedores.at(r).lista.at(v)) + ", ";
+                }
+
+            }
         
-            cout << '\t' << '\t' << "Los mejores vendedores de la region " << NombreRegion(r) << " fueron: " << '\n';
-                for(int v{} ; v < mejoresVendedores.at(r).contador ; ++v)
-                    cout << NombreVendedor(mejoresVendedores.at(r).lista.at(v)) << '\n';
         }
 
         else{
-
-            cout << '\t' << '\t' << "El mejor vendedor de la region " << NombreRegion(r) << " fue: " << '\n';
-            cout << NombreVendedor(mejoresVendedores.at(r).lista.at(0)) << '\n';
-
+            cout << "El mejor vendedor fue: " << NombreVendedor(mejoresVendedores.at(r).lista.at(0)) << '\n';
         }
 
         cout << '\n' << '\n';
-    }
 
-    cout  << "-----------------------------------" << '\n' << '\n';
+        cout  << "-----------------------------------" << '\n' << '\n';
+    }
 
 }
