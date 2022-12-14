@@ -64,7 +64,7 @@ int main()
     //CargarDatosDesdeTXT (data, mejoresVendedores, ventasPrimerVendedor);
     CargarDatosDesdeBIN (data, mejoresVendedores, ventasPrimerVendedor);
     MostrarEstadisticas(data, mejoresVendedores); 
-    cout << ventasPrimerVendedor.size();
+    //cout << ventasPrimerVendedor.size();
 
 	return 0;
 }
