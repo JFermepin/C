@@ -13,28 +13,18 @@
 ***	DEFINES ***
 ***************/
 
-#define NUM_MONTHS 12
 #define DATA_BIN_FILE "data.bin"
 
-#define TABLE_COL_NAME_SIZE 25
+#define TABLE_COL_NAME_SIZE 17
 #define TABLE_COL_MONTH_SIZE 12
 
 /*************
 ***	MACROS ***
 **************/
 
-#define GetSalesCountByRegion(data, region) GetSalesCount(data, region, -1, -1)
-#define GetSalesCountBySeller(data, seller) GetSalesCount(data, -1, seller, -1)
-#define GetSalesCountByMonth(data, month) GetSalesCount(data, -1, -1, month)
-#define GetSalesCountByRegionSeller(data, region, seller) GetSalesCount(data, region, seller, -1)
-#define GetSalesCountByRegionMonth(data, region, month) GetSalesCount(data, region, -1, month)
-#define GetSalesCountBySellerMonth(data, seller, month) GetSalesCount(data, -1, seller, month)
-
 #define GetSalesSumAmountByRegion(data, region) GetSalesSumAmount(data, region, -1, -1)
 #define GetSalesSumAmountBySeller(data, seller) GetSalesSumAmount(data, -1, seller, -1)
 #define GetSalesSumAmountByMonth(data, month) GetSalesSumAmount(data, -1, -1, month)
-#define GetSalesSumAmountByRegionSeller(data, region, seller) GetSalesSumAmount(data, region, seller, -1)
-#define GetSalesSumAmountByRegionMonth(data, region, month) GetSalesSumAmount(data, region, -1, month)
 #define GetSalesSumAmountBySellerMonth(data, seller, month) GetSalesSumAmount(data, -1, seller, month)
 
 /*************
@@ -43,58 +33,57 @@
 
 using namespace std;
 
-using Data =
-	vector<				// Regions
-		vector<			// Sellers
-			array<		// Months
-				vector< // Sales
-					int>,
-				NUM_MONTHS>>>;
+using Data = array<array<array<int,12>,3>,4>;	//REGION - VENDEDOR - MES
+using Sales = vector<int>;
+
+/**************
+***	STRUCTS ***
+***************/
+
+struct BestSeller{
+
+	unsigned count{};
+	array<int, 12> list{};
+
+};
 
 /*****************
 ***	PROTOTYPES ***
 ******************/
 
-void LoadTxtFile();
-bool LoadBinData(Data &);
-void SaveBinData(const Data &);
-void AddSale(Data &, int, int, int, int);
+void LoadTxtFile(Data&, Sales&);
+bool LoadBinData(Data&, Sales&);
+void SaveBinData(Data&, Sales&);
+void AddSale(Data&, Sales&, int, int, int, int);
 
 string GetMonthName(int month);
 string GetSellerName(int seller);
 
-int GetSalesCount(const Data &, int = -1, int = -1, int = -1);
-int GetSalesSumAmount(const Data &, int = -1, int = -1, int = -1);
+int GetSalesSumAmount(const Data&, int = -1, int = -1, int = -1);
+unsigned GetSalesSumAmountByRegionSeller(const Data&, int, int);
+unsigned GetSalesSumAmountByRegionMonth(const Data&, int, int);
 
-vector<int> GetBestSellersByRegion(const Data &, int);
-vector<int> GetBestMonthsByRegion(const Data &, int);
+array<BestSeller,4> GetBestSellers(const Data&);
+array<BestSeller,4> GetBestMonths(const Data&);
 
-void PrintSellersNames(const vector<int>);
-void PrintMonths(const vector<int>);
-void PrintStatistics(const Data &, int = -1);
-void PrintTable(const Data &, int);
+void PrintBestSellersNames(const array<BestSeller,4>&);
+void PrintBestMonths(const array<BestSeller,4>&);
+void PrintStatistics(const Data&, const Sales&);
+void PrintTable(const Data&, int);
 
 /***********
 ***	MAIN ***
 ************/
 
-int main(int argc, char **argv)
+int main()
 {
-	for (int i{}; i < argc; i++)
-		if (strcmp(argv[i], "--loadDataFile") == 0)
-			LoadTxtFile();
-
 	Data data{};
+	Sales firstSellerSales{};
 
-	if (!LoadBinData(data))
-	{
-		cout << "There was an error trying to load " << DATA_BIN_FILE << ". Please load TXT file first.\n";
-		return 1;
-	}
+	//LoadTxtFile(data, firstSellerSales);
+	LoadBinData(data, firstSellerSales);
 
-	cout << "Loaded a total of <" << GetSalesCount(data) << "> sales.\n";
-
-	PrintStatistics(data);
+	PrintStatistics(data, firstSellerSales);
 
 	return 0;
 }
@@ -103,19 +92,15 @@ int main(int argc, char **argv)
 ***	FUNCTIONS ***
 *****************/
 
-void LoadTxtFile()
+void LoadTxtFile(Data& data, Sales& sellerSales)
 {
-	cout << "Reading sales information from the input stream.\n";
-
-	Data data;
-
 	for (int region{}, seller{}, month{}, amount{}; cin >> region >> seller >> month >> amount;)
-		AddSale(data, region, seller, month, amount);
+		AddSale(data, sellerSales, region, seller, month, amount);
 
-	SaveBinData(data);
+	SaveBinData(data, sellerSales);
 }
 
-bool LoadBinData(Data &data)
+bool LoadBinData(Data &data, Sales& sellerSales)
 {
 	unsigned total{};
 
@@ -123,37 +108,8 @@ bool LoadBinData(Data &data)
 	try
 	{
 		file.open(DATA_BIN_FILE, ios::in | ios::binary);
-
-		unsigned regions_size{};
-		file.read(reinterpret_cast<char *>(&regions_size), sizeof(unsigned));
-
-		data.resize(regions_size);
-		for (unsigned region_ix{}; region_ix < regions_size; region_ix++)
-		{
-			unsigned sellers_size{};
-			file.read(reinterpret_cast<char *>(&sellers_size), sizeof(unsigned));
-			data.at(region_ix).resize(sellers_size);
-
-			for (unsigned seller_ix{}; seller_ix < sellers_size; seller_ix++)
-			{
-				unsigned months_size{};
-				file.read(reinterpret_cast<char *>(&months_size), sizeof(unsigned));
-
-				for (unsigned month_ix{}; month_ix < months_size; month_ix++)
-				{
-					unsigned amounts_size{};
-					file.read(reinterpret_cast<char *>(&amounts_size), sizeof(unsigned));
-
-					for (unsigned amount_ix{}; amount_ix < amounts_size; amount_ix++)
-					{
-						int amount{};
-						file.read(reinterpret_cast<char *>(&amount), sizeof(int));
-						data.at(region_ix).at(seller_ix).at(month_ix).push_back(amount);
-						total++;
-					}
-				}
-			}
-		}
+		file.read(reinterpret_cast<char *>(&data), sizeof(data));
+		file.read(reinterpret_cast<char *>(&sellerSales), sizeof(sellerSales));
 		file.close();
 	}
 	catch (int error)
@@ -166,60 +122,28 @@ bool LoadBinData(Data &data)
 	return total > 0;
 }
 
-void SaveBinData(const Data &data)
+void SaveBinData(Data &data, Sales& sellerSales)
 {
 	ofstream file;
+	unsigned size = sizeof(data) + sizeof(sellerSales);
+
 	file.open(DATA_BIN_FILE, ios::out | ios::binary);
 
-	unsigned size{}, total{};
-
-	unsigned regions_size = data.size();
-	file.write(reinterpret_cast<char *>(&regions_size), sizeof(unsigned));
-
-	size += sizeof(unsigned);
-
-	for (auto region : data)
-	{
-		size += sizeof(unsigned);
-		unsigned sellers_size = region.size();
-		file.write(reinterpret_cast<char *>(&sellers_size), sizeof(unsigned));
-
-		for (auto seller : region)
-		{
-			size += sizeof(unsigned);
-			unsigned months_size = seller.size();
-			file.write(reinterpret_cast<char *>(&months_size), sizeof(unsigned));
-
-			for (auto month : seller)
-			{
-				size += sizeof(unsigned);
-				unsigned amounts_size = month.size();
-				file.write(reinterpret_cast<char *>(&amounts_size), sizeof(unsigned));
-
-				for (auto amount : month)
-				{
-					size += sizeof(int);
-					total++;
-					file.write(reinterpret_cast<char *>(&amount), sizeof(int));
-				}
-			}
-		}
-	}
+	file.write(reinterpret_cast<char *>(&data), sizeof(data));
+	file.write(reinterpret_cast<char *>(&sellerSales), sizeof(sellerSales));
 
 	file.close();
 
-	cout << "A total of <" << total << "> sales were added to " << DATA_BIN_FILE << " file using <" << size << "> bytes.\n";
+	cout << "The file <" << DATA_BIN_FILE << "> used <" << size << "> bytes.\n";
 }
 
-void AddSale(Data &data, int region, int seller, int month, int amount)
+void AddSale(Data& data, Sales& sellerSales, int region, int seller, int month, int amount)
 {
-	while ((int)data.size() < region)
-		data.push_back({});
+	data.at(region-1).at(seller-1).at(month-1) += amount;
 
-	while ((int)data.at(region - 1).size() < seller)
-		data.at(region - 1).push_back({});
-
-	data.at(region - 1).at(seller - 1).at(month - 1).push_back(amount);
+	if (region == 1 && seller == 1){
+		sellerSales.push_back(amount);
+	}
 }
 
 string GetRegionName(int region)
@@ -281,132 +205,139 @@ string GetSellerName(int seller)
 	case 2:
 		return "German Ceballos";
 	case 3:
-		return "Jeronimo Fermepin Galdo";
-	case 4:
-		return "Pilar Fernandez";
-	case 5:
-		return "Nicolas Filippi Farmar";
-	case 6:
-		return "Enrique Marques";
-	case 7:
-		return "Tobias Sailler Quintana";
-	case 8:
-		return "Curt Venator Rauch";
+		return "Jeronimo Fermepin";
 	default:
 		return "Not defined";
 	}
 }
 
-int GetSalesCount(const Data &data, int region, int seller, int month)
-{
-	int count{};
-	for (int ix_region{region != -1 ? region : 0}; ix_region < ((region != -1) ? region + 1 : (int)data.size()); ix_region++)
-		for (int ix_seller{seller != -1 ? seller : 0}; ix_seller < ((seller != -1) ? seller + 1 : (int)data.at(ix_region).size()); ix_seller++)
-			for (int ix_month{month != -1 ? month : 0}; ix_month < ((month != -1) ? month + 1 : (int)data.at(ix_region).at(ix_seller).size()); ix_month++)
-				count += data.at(ix_region).at(ix_seller).at(ix_month).size();
-	return count;
-}
-
 int GetSalesSumAmount(const Data &data, int region, int seller, int month)
 {
 	int sum{};
-	for (int ix_region{region != -1 ? region : 0}; ix_region < ((region != -1) ? region + 1 : (int)data.size()); ix_region++)
-		for (int ix_seller{seller != -1 ? seller : 0}; ix_seller < ((seller != -1) ? seller + 1 : (int)data.at(ix_region).size()); ix_seller++)
-			for (int ix_month{month != -1 ? month : 0}; ix_month < ((month != -1) ? month + 1 : (int)data.at(ix_region).at(ix_seller).size()); ix_month++)
-			{
-				for (auto amount : data.at(ix_region).at(ix_seller).at(ix_month))
-					sum += amount;
-			}
+	for (int ix_region{region != -1 ? region : 0}; ix_region < ((region != -1) ? region + 1 : 4); ix_region++)
+		for (int ix_seller{seller != -1 ? seller : 0}; ix_seller < ((seller != -1) ? seller + 1 : 3); ix_seller++)
+			for (int ix_month{month != -1 ? month : 0}; ix_month < ((month != -1) ? month + 1 : 12); ix_month++)
+				sum += data.at(ix_region).at(ix_seller).at(ix_month);
 	return sum;
 }
 
-int GetSalesMaxAmount(const Data &data, int region, int seller, int month)
+unsigned GetSalesSumAmountByRegionSeller(const Data &data, int region, int seller)
 {
-	int max{};
-	for (int ix_region{region != -1 ? region : 0}; ix_region < ((region != -1) ? region + 1 : (int)data.size()); ix_region++)
-		for (int ix_seller{seller != -1 ? seller : 0}; ix_seller < ((seller != -1) ? seller + 1 : (int)data.at(ix_region).size()); ix_seller++)
-			for (int ix_month{month != -1 ? month : 0}; ix_month < ((month != -1) ? month + 1 : (int)data.at(ix_region).at(ix_seller).size()); ix_month++)
-				for (auto amount : data.at(ix_region).at(ix_seller).at(ix_month))
-					if (amount > max)
-						max = amount;
-	return max;
+    unsigned total{};
+    for(int month{} ; month < 12 ; month++)
+        total += data.at(region).at(seller).at(month);
+    return total;
 }
 
-vector<int> GetBestSellersByRegion(const Data &data, int region)
+unsigned GetSalesSumAmountByRegionMonth(const Data &data, int region, int month)
 {
-	int maxAmount{};
-	vector<int> vec{};
+    unsigned total{};
+    for(int seller{} ; seller < 3 ; seller++)
+        total += data.at(region).at(seller).at(month);
+    return total;
+}
 
-	for (int ix_seller{}; ix_seller < data.at(region).size(); ix_seller++)
+array<BestSeller,4> GetBestSellers(const Data &data)
+{
+	array<BestSeller,4> bestSellers{};
+
+	for (int ix_region{}; ix_region < 4; ix_region++)
 	{
-		int max = GetSalesSumAmountByRegionSeller(data, region, ix_seller);
-		if (max > maxAmount)
-		{
-			maxAmount = max;
-			vec.clear();
+		int maxAmount{};
+
+		for (int ix_seller{}; ix_seller < 3; ix_seller++){
+
+			int max = GetSalesSumAmountByRegionSeller(data, ix_region, ix_seller);
+
+			if (max > maxAmount)
+			{
+				maxAmount = max;
+				bestSellers.at(ix_region).count = 0;
+                bestSellers.at(ix_region).list.fill(0);
+			}
+			if (max >= maxAmount)
+			{
+				bestSellers.at(ix_region).list.at(bestSellers.at(ix_region).count) = ix_seller;
+			    bestSellers.at(ix_region).count++;
+			}
 		}
-		if (max >= maxAmount)
-			vec.push_back(ix_seller);
 	}
 
-	return vec;
+	return bestSellers;
 }
 
-vector<int> GetBestMonthsByRegion(const Data &data, int region)
+array<BestSeller,4> GetBestMonths(const Data &data)
 {
-	array<int, NUM_MONTHS> maxAmount{};
-	vector<int> vec{};
+	array<BestSeller,4> bestMonths{};
 
-	for (int ix_seller{}; ix_seller < data.at(region).size(); ix_seller++)
-		for (int ix_month{}; ix_month < data.at(region).at(ix_seller).size(); ix_month++)
-			maxAmount[ix_month] += GetSalesSumAmount(data, region, ix_seller, ix_month);
-
-	int max{};
-	for (int ix_month{}; ix_month < NUM_MONTHS; ix_month++)
+	for (int ix_region{}; ix_region < 4; ix_region++)
 	{
-		if (maxAmount.at(ix_month) > max)
-		{
-			max = maxAmount.at(ix_month);
-			vec.clear();
+		int maxAmount{};
+
+		for (int ix_month{}; ix_month < 12; ix_month++){
+
+			int max = GetSalesSumAmountByRegionMonth(data, ix_region, ix_month);
+
+			if (max > maxAmount)
+			{
+				maxAmount = max;
+				bestMonths.at(ix_region).count = 0;
+                bestMonths.at(ix_region).list.fill(0);
+			}
+			if (max >= maxAmount)
+			{
+				bestMonths.at(ix_region).list.at(bestMonths.at(ix_region).count) = ix_month;
+			    bestMonths.at(ix_region).count++;
+			}
 		}
-		if (maxAmount.at(ix_month) >= max)
-			vec.push_back(ix_month);
 	}
 
-	return vec;
+	return bestMonths;
 }
 
-void PrintSellersNames(const vector<int> vec)
+void PrintBestSellersNames(const array<BestSeller,4> bestSellers, int region)
 {
 	cout << "[";
-	for (int ix{}; ix < vec.size(); ix++)
+	for (int ix{}; ix < bestSellers.at(region).count; ix++)
 	{
-		cout << (ix > 0 ? ", " : "") << GetSellerName(vec.at(ix) + 1);
+		cout << (ix > 0 ? ", " : "") << GetSellerName(bestSellers.at(region).list.at(ix) + 1);
 	}
 	cout << "]";
 }
 
-void PrintMonths(const vector<int> vec)
+void PrintBestMonths(const array<BestSeller,4> bestMonths, int region)
 {
 	cout << "[";
-	for (int ix{}; ix < vec.size(); ix++)
+	for (int ix{}; ix < bestMonths.at(region).count; ix++)
 	{
-		cout << (ix > 0 ? ", " : "") << GetMonthName(vec.at(ix) + 1);
+		cout << (ix > 0 ? ", " : "") << GetMonthName(bestMonths.at(region).list.at(ix) + 1);
 	}
 	cout << "]";
 }
 
-void PrintStatistics(const Data &data, int region)
+void PrintStatistics(const Data &data, const Sales& sellerSales)
 {
-	for (int ix_region{region != -1 ? region : 0}; ix_region < ((region != -1) ? region + 1 : (int)data.size()); ix_region++)
+	/*
+	cout << "Sales for the region 1, seller 1: [";
+	for (unsigned ix{}; ix < sellerSales.size(); ix++)
+	{
+		cout << (ix > 0 ? ", " : "") << sellerSales.at(ix);
+	}
+	cout << "]\n\n";
+	*/
+
+	array<BestSeller,4> bestSellers = GetBestSellers(data);
+	array<BestSeller,4> bestMonths = GetBestMonths(data);
+
+	for (int ix_region{}; ix_region < 4; ix_region++)
 	{
 		cout << "Statistics for Region <" << GetRegionName(ix_region + 1) << ">:\n";
 		cout << "\tMax amount of the year: $" << GetSalesSumAmountByRegion(data, ix_region) << "\n";
 		cout << "\tBest seller/s of the year: ";
-		PrintSellersNames(GetBestSellersByRegion(data, ix_region));
+		PrintBestSellersNames(bestSellers, ix_region);
 		cout << "\n";
 		cout << "\tBest months/s of the year: ";
-		PrintMonths(GetBestMonthsByRegion(data, ix_region));
+		PrintBestMonths(bestMonths, ix_region);
 		cout << "\n";
 		cout << "\n";
 		PrintTable(data, ix_region);
@@ -425,40 +356,40 @@ void PrintTable(const Data &data, int ix_region)
 {
 	// Print headers
 	cout << "\t" << FixedLengthString("Seller", TABLE_COL_NAME_SIZE);
-	for (int i{}; i < NUM_MONTHS; i++)
+	for (int i{}; i < 12; i++)
 		cout << " | " << FixedLengthString(GetMonthName(i + 1), TABLE_COL_MONTH_SIZE);
 
-	cout << " | " << FixedLengthString("Total", TABLE_COL_MONTH_SIZE) << "\n\t";
+	cout << " | " << FixedLengthString("Total", TABLE_COL_MONTH_SIZE) << "\t";
 
 	// Print div line
-	for (int i{}; i < (TABLE_COL_NAME_SIZE + 13 * (TABLE_COL_MONTH_SIZE + 3)); i++)
+	for (int i{}; i < (TABLE_COL_NAME_SIZE + 13 * (TABLE_COL_MONTH_SIZE + 3) - 5); i++)
 		cout << "-";
 	cout << "\n";
 
 	// Print amounts by seller
-	for (int ix_seller{}; ix_seller < data.at(ix_region).size(); ix_seller++)
+	for (int ix_seller{}; ix_seller < 3; ix_seller++)
 	{
 		cout << "\t" << FixedLengthString(GetSellerName(ix_seller + 1), TABLE_COL_NAME_SIZE);
-		for (int ix_month{}; ix_month < data.at(ix_region).at(ix_seller).size(); ix_month++)
+		for (int ix_month{}; ix_month < 12; ix_month++)
 		{
-			cout << " | $" << FixedLengthString(to_string(GetSalesSumAmount(data, ix_region, ix_seller, ix_month)) + " [" + to_string(GetSalesCount(data, ix_region, ix_seller, ix_month)) + "]", (TABLE_COL_MONTH_SIZE - 1));
+			cout << " | $" << FixedLengthString(to_string(GetSalesSumAmount(data, ix_region, ix_seller, ix_month)), (TABLE_COL_MONTH_SIZE - 1));
 		}
-		cout << " | $" << FixedLengthString(to_string(GetSalesSumAmountByRegionSeller(data, ix_region, ix_seller)) + " [" + to_string(GetSalesCountByRegionSeller(data, ix_region, ix_seller)) + "]", (TABLE_COL_MONTH_SIZE - 1)) << "\n";
+		cout << " | $" << FixedLengthString(to_string(GetSalesSumAmountByRegionSeller(data, ix_region, ix_seller)), (TABLE_COL_MONTH_SIZE - 1));
 	}
 
 	// Print div line
 	cout << "\t";
-	for (int i{}; i < (TABLE_COL_NAME_SIZE + 13 * (TABLE_COL_MONTH_SIZE + 3)); i++)
+	for (int i{}; i < (TABLE_COL_NAME_SIZE + 13 * (TABLE_COL_MONTH_SIZE + 3) - 5); i++)
 		cout << "-";
 	cout << "\n";
 
 	// Print Total amounts
 	cout << "\t" << FixedLengthString("Total", TABLE_COL_NAME_SIZE);
-	for (int ix_month{}; ix_month < NUM_MONTHS; ix_month++)
+	for (int ix_month{}; ix_month < 12; ix_month++)
 	{
-		cout << " | $" << FixedLengthString(to_string(GetSalesSumAmountByRegionMonth(data, ix_region, ix_month)) + " [" + to_string(GetSalesCountByRegionMonth(data, ix_region, ix_month)) + "]", (TABLE_COL_MONTH_SIZE - 1));
+		cout << " | $" << FixedLengthString(to_string(GetSalesSumAmountByRegionMonth(data, ix_region, ix_month)), (TABLE_COL_MONTH_SIZE - 1));
 	}
-	cout << " | $" << FixedLengthString(to_string(GetSalesSumAmountByRegion(data, ix_region)) + " [" + to_string(GetSalesCountByRegion(data, ix_region)) + "]", (TABLE_COL_MONTH_SIZE - 1)) << "\n";
+	cout << " | $" << FixedLengthString(to_string(GetSalesSumAmountByRegion(data, ix_region)), (TABLE_COL_MONTH_SIZE - 1)) << "\n";
 
 	cout << "\n";
 }

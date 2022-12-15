@@ -185,7 +185,7 @@ string NombreVendedor(int vendedor)
 
 unsigned TotalDeVentas(const Data& data, int region, int vendedor){
 
-    int total{};
+    unsigned total{};
     for(int mes{} ; mes < 12 ; ++mes)
         total += data.at(region).at(vendedor).at(mes);
     return total;
