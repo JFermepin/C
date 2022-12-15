@@ -64,7 +64,11 @@ int main()
     //CargarDatosDesdeTXT (data, mejoresVendedores, ventasPrimerVendedor);
     CargarDatosDesdeBIN (data, mejoresVendedores, ventasPrimerVendedor);
     MostrarEstadisticas(data, mejoresVendedores); 
-    //cout << ventasPrimerVendedor.size();
+
+    cout << "El primer vendedor hizo " << ventasPrimerVendedor.size() << " ventas: [";
+    for(int i ; i<ventasPrimerVendedor.size() ; i++)
+        cout << (i > 0 ? ", " : "") << ventasPrimerVendedor.at(i);
+    cout << "]";
 
 	return 0;
 }
@@ -92,9 +96,20 @@ void CargarDatosDesdeBIN (Data& data, MejoresVendedores& mejoresVendedores, Vent
 
     ifstream archivoBin;
     archivoBin.open("data.bin", ios::in | ios::binary);
+
+    unsigned numVentasPrimerVendedor{};
+    archivoBin.read(reinterpret_cast<char *>(&numVentasPrimerVendedor), sizeof(unsigned));
+
+    for (unsigned i{}; i < numVentasPrimerVendedor; i++)
+    {
+        int importe{};
+        archivoBin.read(reinterpret_cast<char *>(&importe), sizeof(int));
+        ventasPrimerVendedor.push_back(importe);
+    }
+
     archivoBin.read(reinterpret_cast<char *>(&data), sizeof(data));
     archivoBin.read(reinterpret_cast<char *>(&mejoresVendedores), sizeof(mejoresVendedores));
-    archivoBin.read(reinterpret_cast<char *>(&ventasPrimerVendedor), sizeof(ventasPrimerVendedor));
+
 	archivoBin.close();
 
     CrearTXT(data, mejoresVendedores);
@@ -105,9 +120,16 @@ void CrearBin (Data& data, MejoresVendedores& mejoresVendedores, Ventas& ventasP
 
     ofstream archivoSalida;
     archivoSalida.open("out.bin", ios::out | ios::binary);
+
+    unsigned numVentasPrimerVendedor = ventasPrimerVendedor.size();
+    archivoSalida.write(reinterpret_cast<char *>(&numVentasPrimerVendedor), sizeof(unsigned));
+
+	for (auto importe : ventasPrimerVendedor)
+		archivoSalida.write(reinterpret_cast<char *>(&importe), sizeof(int));
+
     archivoSalida.write(reinterpret_cast<char *>(&data), sizeof(data));
     archivoSalida.write(reinterpret_cast<char *>(&mejoresVendedores), sizeof(mejoresVendedores));
-    archivoSalida.write(reinterpret_cast<char *>(&ventasPrimerVendedor), sizeof(ventasPrimerVendedor));
+
     archivoSalida.close();
 }
 
@@ -118,20 +140,20 @@ void CrearTXT (const Data& data, const MejoresVendedores& mejoresVendedores){
 
     for(int r{}; r < 4 ; ++r){
 
-        archivoSalida << "Region: " << NombreRegion(r) << '\n' << '\n';
+        archivoSalida << "Region: " << NombreRegion(r) << "\n\n";
 
         for(int v{}; v < 3 ; ++v){
 
-            archivoSalida << '\t' << "Vendedor: " << NombreVendedor(v) << '\n' << '\n';
+            archivoSalida << "\tVendedor: " << NombreVendedor(v) << "\n\n";
 
             for(int m{}; m < 12 ; ++m){
 
-            archivoSalida << '\t' << '\t' << "Total de " << NombreMes(m) << ": " << data.at(r).at(v).at(m) << '\n';
+            archivoSalida << "\t\tTotal de " << NombreMes(m) << ": " << data.at(r).at(v).at(m) << '\n';
 
             }
 
-            archivoSalida << '\t' << '\t' << "Total de ventas en el año: " << TotalDeVentas(data, r, v) << '\n';
-            archivoSalida << '\t' << '\t' << "Promedio de ventas: " << PromedioVentas(data, r, v) << '\n' << '\n';
+            archivoSalida << "\n\t\tTotal de ventas en el año: " << TotalDeVentas(data, r, v) << '\n';
+            archivoSalida << "\t\tPromedio de ventas: " << PromedioVentas(data, r, v) << "\n\n";
         }
 
         if(mejoresVendedores.at(r).contador>1){ //si hay mas de uno
@@ -155,9 +177,7 @@ void CrearTXT (const Data& data, const MejoresVendedores& mejoresVendedores){
             archivoSalida << "El mejor vendedor fue: " << NombreVendedor(mejoresVendedores.at(r).lista.at(0)) << '\n';
         }
 
-        archivoSalida << '\n' << '\n';
-
-        archivoSalida  << "-----------------------------------" << '\n' << '\n';
+        archivoSalida << "\n\n-----------------------------------\n\n";
     }
 
 
@@ -185,7 +205,7 @@ string NombreVendedor(int vendedor)
 
 unsigned TotalDeVentas(const Data& data, int region, int vendedor){
 
-    unsigned total{};
+    int total{};
     for(int mes{} ; mes < 12 ; ++mes)
         total += data.at(region).at(vendedor).at(mes);
     return total;
@@ -219,20 +239,20 @@ void MostrarEstadisticas(const Data& data, const MejoresVendedores& mejoresVende
 
     for(int r{}; r < 4 ; ++r){
 
-        cout << "Region: " << NombreRegion(r) << '\n' << '\n';
+        cout << "Region: " << NombreRegion(r) << "\n\n";
 
         for(int v{}; v < 3 ; ++v){
 
-            cout << '\t' << "Vendedor: " << NombreVendedor(v) << '\n' << '\n';
+            cout << "\tVendedor: " << NombreVendedor(v) << "\n\n";
 
             for(int m{}; m < 12 ; ++m){
 
-            cout << '\t' << '\t' << "Total de " << NombreMes(m) << ": " << data.at(r).at(v).at(m) << '\n';
+            cout << "\t\tTotal de " << NombreMes(m) << ": " << data.at(r).at(v).at(m) << '\n';
 
             }
 
-            cout << '\t' << '\t' << "Total de ventas en el ano: " << TotalDeVentas(data, r, v) << '\n';
-            cout << '\t' << '\t' << "Promedio de ventas: " << PromedioVentas(data, r, v) << '\n' << '\n';
+            cout << "\n\t\tTotal de ventas en el ano: " << TotalDeVentas(data, r, v) << '\n';
+            cout << "\t\tPromedio de ventas: " << PromedioVentas(data, r, v) << "\n\n";
         }
 
         if(mejoresVendedores.at(r).contador>1){ //si hay mas de uno
@@ -256,9 +276,7 @@ void MostrarEstadisticas(const Data& data, const MejoresVendedores& mejoresVende
             cout << "El mejor vendedor fue: " << NombreVendedor(mejoresVendedores.at(r).lista.at(0)) << '\n';
         }
 
-        cout << '\n' << '\n';
-
-        cout  << "-----------------------------------" << '\n' << '\n';
+        cout << "\n\n-----------------------------------\n\n";
     }
 
 }
