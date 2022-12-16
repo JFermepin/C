@@ -55,6 +55,7 @@ Region: Norte
 		Promedio de ventas: 8780
 
 El mejor vendedor fue: Jeronimo Fermepin
+El mejor mes fue: Septiembre
 
 
 -----------------------------------
@@ -116,6 +117,7 @@ Region: Este
 		Promedio de ventas: 4097
 
 El mejor vendedor fue: Jeronimo Fermepin
+El mejor mes fue: Diciembre
 
 
 -----------------------------------
@@ -177,6 +179,7 @@ Region: Sur
 		Promedio de ventas: 2672
 
 El mejor vendedor fue: Jeronimo Fermepin
+El mejor mes fue: Febrero
 
 
 -----------------------------------
@@ -238,6 +241,7 @@ Region: Oeste
 		Promedio de ventas: 9039
 
 Los mejores vendedores fueron: Jeronimo Fermepin, Enrique Marques
+El mejor mes fue: Diciembre
 
 
 -----------------------------------

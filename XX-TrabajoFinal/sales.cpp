@@ -193,8 +193,27 @@ void CrearTXT (const Data& data, const MejoresVendedores& mejoresVendedores, con
             archivoSalida << "El mejor vendedor fue: " << NombreVendedor(mejoresVendedores.at(r).lista.at(0)) << '\n';
         }
 
-        archivoSalida << "\n\n-----------------------------------\n\n";
-    }
+        if(mejoresMeses.at(r).contador>1){ //si hay mas de uno
+
+            archivoSalida << "Los mejores meses fueron: ";
+
+            for(int m{} ; m < mejoresMeses.at(r).contador ; ++m){
+
+                if(m == mejoresMeses.at(r).contador-1){
+                    archivoSalida << NombreMes(mejoresMeses.at(r).lista.at(m)) + '\n';
+                }
+                else{
+                    archivoSalida << NombreMes(mejoresMeses.at(r).lista.at(m)) + ", ";
+                }
+            }
+        }
+
+        else{
+            archivoSalida << "El mejor mes fue: " << NombreMes(mejoresMeses.at(r).lista.at(0)) << '\n';
+        }
+
+            archivoSalida << "\n\n-----------------------------------\n\n";
+        }
 
 
     archivoSalida.close();
@@ -320,7 +339,7 @@ void MostrarMejoresVendedores (const MejoresVendedores& mejoresVendedores, int r
 
     if(mejoresVendedores.at(region).contador>1){ //si hay mas de uno
 
-        cout << "\t\tLos mejores vendedores fueron: ";
+        cout << "Los mejores vendedores fueron: ";
 
         for(int v{} ; v < mejoresVendedores.at(region).contador ; ++v){
 
@@ -336,7 +355,7 @@ void MostrarMejoresVendedores (const MejoresVendedores& mejoresVendedores, int r
     }
 
     else{
-        cout << "\t\tEl mejor vendedor fue: " << NombreVendedor(mejoresVendedores.at(region).lista.at(0)) << '\n';
+        cout << "El mejor vendedor fue: " << NombreVendedor(mejoresVendedores.at(region).lista.at(0)) << '\n';
     }
 
 }
@@ -345,7 +364,7 @@ void MostrarMejoresMeses (const MejoresVendedores& mejoresMeses, int region){
 
     if(mejoresMeses.at(region).contador>1){ //si hay mas de uno
 
-        cout << "\t\tLos mejores meses fueron: ";
+        cout << "Los mejores meses fueron: ";
 
         for(int m{} ; m < mejoresMeses.at(region).contador ; ++m){
 
@@ -361,7 +380,7 @@ void MostrarMejoresMeses (const MejoresVendedores& mejoresMeses, int region){
     }
 
     else{
-        cout << "\t\tEl mejor mes fue: " << NombreMes(mejoresMeses.at(region).lista.at(0)) << '\n';
+        cout << "El mejor mes fue: " << NombreMes(mejoresMeses.at(region).lista.at(0)) << '\n';
     }
 
 }
