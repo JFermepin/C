@@ -347,7 +347,7 @@ void PrintStatistics(const Data &data, const Sales& sellerSales)
 	for (int ix_region{}; ix_region < 4; ix_region++)
 	{
 		cout << "Statistics for Region <" << GetRegionName(ix_region + 1) << ">:\n";
-		cout << "\tMax amount of the year: $" << GetSalesSumAmountByRegion(data, ix_region) << "\n";
+		cout << "\tTotal amount of the year: $" << GetSalesSumAmountByRegion(data, ix_region) << "\n";
 		cout << "\tBest seller/s of the year: ";
 		PrintBestSellersNames(bestSellers, ix_region);
 		cout << "\n";

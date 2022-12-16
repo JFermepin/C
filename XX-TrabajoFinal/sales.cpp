@@ -19,7 +19,7 @@ using namespace std;
 ***	ESTRUCTURAS ***
 *******************/
 
-struct MejorVendedor{
+struct Mejor{
 
 	unsigned contador{};
 	array<int, 12> lista{};
@@ -32,22 +32,29 @@ struct MejorVendedor{
 
 using Data = array<array<array<int,12>,3>,4>;	//REGION - VENDEDOR - MES
 using Ventas = vector<int>;
-using MejoresVendedores = array<MejorVendedor,4>;
+using MejoresVendedores = array<Mejor,4>;
+using MejoresMeses = array<Mejor,4>;
 
 /*****************
 ***	PROTOTIPOS ***
 ******************/
 
-void CargarDatosDesdeTXT (Data&, MejoresVendedores&, Ventas&);
-void CargarDatosDesdeBIN (Data&, MejoresVendedores&, Ventas&);
+void CargarDatosDesdeTXT (Data&, MejoresVendedores&, MejoresMeses&, Ventas&);
+void CargarDatosDesdeBIN (Data&, MejoresVendedores&, MejoresMeses&, Ventas&);
 
-void CrearBin (Data&, MejoresVendedores&, Ventas&);
-void CrearTXT (const Data&, const MejoresVendedores&);
+void CrearBin (Data&, MejoresVendedores&, MejoresMeses&, Ventas&);
+void CrearTXT (const Data&, const MejoresVendedores&, const MejoresMeses&, const Ventas&);
 
-unsigned TotalDeVentas(const Data&, int, int);
+unsigned TotalDeVentasRegionVendedor(const Data&, int, int);
+unsigned TotalDeVentasRegionMes(const Data&, int, int);
 int PromedioVentas (const Data&, int, int);
+
 void GuardarMejoresVendedores (Data&, MejoresVendedores&);
-void MostrarEstadisticas(const Data&, const MejoresVendedores&);
+void GuardarMejoresMeses (Data&, MejoresMeses&);
+
+void MostrarEstadisticas(const Data&, const MejoresVendedores&, const MejoresMeses&);
+void MostrarMejoresVendedores (const MejoresVendedores&, int);
+void MostrarMejoresMeses (const MejoresMeses&, int);
 
 string NombreRegion(int);
 string NombreMes(int);
@@ -62,16 +69,19 @@ int main()
 {
     Data data{};
     MejoresVendedores mejoresVendedores{};
+    MejoresMeses mejoresMeses{};
     Ventas ventasPrimerVendedor{};
 
-    //CargarDatosDesdeTXT (data, mejoresVendedores, ventasPrimerVendedor);
-    CargarDatosDesdeBIN (data, mejoresVendedores, ventasPrimerVendedor);
-    MostrarEstadisticas(data, mejoresVendedores); 
+    //CargarDatosDesdeTXT (data, mejoresVendedores, mejoresMeses, ventasPrimerVendedor);
+    CargarDatosDesdeBIN (data, mejoresVendedores, mejoresMeses, ventasPrimerVendedor);
+    MostrarEstadisticas(data, mejoresVendedores, mejoresMeses); 
 
+    /*
     cout << "El primer vendedor hizo " << ventasPrimerVendedor.size() << " ventas: [";
     for(int i{} ; i<ventasPrimerVendedor.size() ; i++)
         cout << (i > 0 ? ", " : "") << ventasPrimerVendedor.at(i);
     cout << "]";
+    */
 
 	return 0;
 }
@@ -80,7 +90,7 @@ int main()
 ***	FUNCIONES - DEFNICIONES ***
 *******************************/
 
-void CargarDatosDesdeTXT (Data& data, MejoresVendedores& mejoresVendedores, Ventas& ventasPrimerVendedor){
+void CargarDatosDesdeTXT (Data& data, MejoresVendedores& mejoresVendedores, MejoresMeses& mejoresMeses, Ventas& ventasPrimerVendedor){
 
     for(int region{}, vendedor{}, mes{}, importe{}; cin >> region >> vendedor >> mes >> importe; ){
 
@@ -91,11 +101,12 @@ void CargarDatosDesdeTXT (Data& data, MejoresVendedores& mejoresVendedores, Vent
     }
 
     GuardarMejoresVendedores(data, mejoresVendedores);
-    CrearBin(data, mejoresVendedores, ventasPrimerVendedor);
+    GuardarMejoresMeses(data, mejoresMeses);
+    CrearBin(data, mejoresVendedores, mejoresMeses, ventasPrimerVendedor);
 }
 
 
-void CargarDatosDesdeBIN (Data& data, MejoresVendedores& mejoresVendedores, Ventas& ventasPrimerVendedor){
+void CargarDatosDesdeBIN (Data& data, MejoresVendedores& mejoresVendedores, MejoresMeses& mejoresMeses, Ventas& ventasPrimerVendedor){
 
     ifstream archivoBin;
     archivoBin.open("data.bin", ios::in | ios::binary);
@@ -112,14 +123,15 @@ void CargarDatosDesdeBIN (Data& data, MejoresVendedores& mejoresVendedores, Vent
 
     archivoBin.read(reinterpret_cast<char *>(&data), sizeof(data));
     archivoBin.read(reinterpret_cast<char *>(&mejoresVendedores), sizeof(mejoresVendedores));
+    archivoBin.read(reinterpret_cast<char *>(&mejoresMeses), sizeof(mejoresMeses));
 
 	archivoBin.close();
 
-    CrearTXT(data, mejoresVendedores);
+    CrearTXT(data, mejoresVendedores, mejoresMeses, ventasPrimerVendedor);
 
 }
 
-void CrearBin (Data& data, MejoresVendedores& mejoresVendedores, Ventas& ventasPrimerVendedor){
+void CrearBin (Data& data, MejoresVendedores& mejoresVendedores, MejoresMeses& mejoresMeses, Ventas& ventasPrimerVendedor){
 
     ofstream archivoSalida;
     archivoSalida.open("out.bin", ios::out | ios::binary);
@@ -132,11 +144,12 @@ void CrearBin (Data& data, MejoresVendedores& mejoresVendedores, Ventas& ventasP
 
     archivoSalida.write(reinterpret_cast<char *>(&data), sizeof(data));
     archivoSalida.write(reinterpret_cast<char *>(&mejoresVendedores), sizeof(mejoresVendedores));
+    archivoSalida.write(reinterpret_cast<char *>(&mejoresMeses), sizeof(mejoresMeses));
 
     archivoSalida.close();
 }
 
-void CrearTXT (const Data& data, const MejoresVendedores& mejoresVendedores){
+void CrearTXT (const Data& data, const MejoresVendedores& mejoresVendedores, const MejoresMeses& mejoresMeses, const Ventas& ventasPrimerVendedor){
 
     ofstream archivoSalida;
     archivoSalida.open("out.txt", ios::out);
@@ -155,7 +168,7 @@ void CrearTXT (const Data& data, const MejoresVendedores& mejoresVendedores){
 
             }
 
-            archivoSalida << "\n\t\tTotal de ventas en el año: " << TotalDeVentas(data, r, v) << '\n';
+            archivoSalida << "\n\t\tTotal de ventas en el año: " << TotalDeVentasRegionVendedor(data, r, v) << '\n';
             archivoSalida << "\t\tPromedio de ventas: " << PromedioVentas(data, r, v) << "\n\n";
         }
 
@@ -206,16 +219,24 @@ string NombreVendedor(int vendedor)
 	return vendedores.at(vendedor);
 }
 
-unsigned TotalDeVentas(const Data& data, int region, int vendedor){
+unsigned TotalDeVentasRegionVendedor(const Data& data, int region, int vendedor){
 
     int total{};
-    for(int mes{} ; mes < 12 ; ++mes)
-        total += data.at(region).at(vendedor).at(mes);
+    for(int m{} ; m < 12 ; ++m)
+        total += data.at(region).at(vendedor).at(m);
     return total;
 
 }
 
-void GuardarMejoresVendedores (Data& data, MejoresVendedores& mejoresVendedores){
+unsigned TotalDeVentasRegionMes(const Data& data, int region, int mes){
+
+    unsigned total{};
+    for(int v{} ; v < 3 ; ++v)
+        total += data.at(region).at(v).at(mes);
+    return total;
+}
+
+void GuardarMejoresVendedores(Data& data, MejoresVendedores& mejoresVendedores){
 
     for(int r{} ; r < 4 ; ++r){
 
@@ -223,13 +244,13 @@ void GuardarMejoresVendedores (Data& data, MejoresVendedores& mejoresVendedores)
 
         for(int v{}; v < 3 ; ++v){
 
-            if(TotalDeVentas(data,r,v)>max)
+            if(TotalDeVentasRegionVendedor(data,r,v)>max)
             {
-                max = TotalDeVentas(data,r,v);
+                max = TotalDeVentasRegionVendedor(data,r,v);
                 mejoresVendedores.at(r).contador = 0;
                 mejoresVendedores.at(r).lista.fill(0);
             }
-            if (TotalDeVentas(data,r,v)>=max)
+            if (TotalDeVentasRegionVendedor(data,r,v)>=max)
             {
               	mejoresVendedores.at(r).lista.at(mejoresVendedores.at(r).contador) = v;
 			    mejoresVendedores.at(r).contador++;
@@ -238,7 +259,30 @@ void GuardarMejoresVendedores (Data& data, MejoresVendedores& mejoresVendedores)
     }
 }
 
-void MostrarEstadisticas(const Data& data, const MejoresVendedores& mejoresVendedores){
+void GuardarMejoresMeses (Data& data, MejoresVendedores& mejoresMeses){
+
+    for(int r{} ; r < 4 ; ++r){
+
+        unsigned max{};
+
+        for(int m{}; m < 12 ; ++m){
+
+            if(TotalDeVentasRegionMes(data,r,m)>max)
+            {
+                max = TotalDeVentasRegionMes(data,r,m);
+                mejoresMeses.at(r).contador = 0;
+                mejoresMeses.at(r).lista.fill(0);
+            }
+            if (TotalDeVentasRegionMes(data,r,m)>=max)
+            {
+              	mejoresMeses.at(r).lista.at(mejoresMeses.at(r).contador) = m;
+			    mejoresMeses.at(r).contador++;
+            }
+        }
+    }
+}
+
+void MostrarEstadisticas(const Data& data, const MejoresVendedores& mejoresVendedores, const MejoresMeses& mejoresMeses){
 
     for(int r{}; r < 4 ; ++r){
 
@@ -254,30 +298,12 @@ void MostrarEstadisticas(const Data& data, const MejoresVendedores& mejoresVende
 
             }
 
-            cout << "\n\t\tTotal de ventas en el ano: " << TotalDeVentas(data, r, v) << '\n';
+            cout << "\n\t\tTotal de ventas en el ano: " << TotalDeVentasRegionVendedor(data, r, v) << '\n';
             cout << "\t\tPromedio de ventas: " << PromedioVentas(data, r, v) << "\n\n";
         }
 
-        if(mejoresVendedores.at(r).contador>1){ //si hay mas de uno
-
-            cout << "Los mejores vendedores fueron: ";
-
-            for(int v{} ; v < mejoresVendedores.at(r).contador ; ++v){
-
-                if(v == mejoresVendedores.at(r).contador-1){
-                    cout << NombreVendedor(mejoresVendedores.at(r).lista.at(v)) + '\n';
-                }
-                else{
-                    cout << NombreVendedor(mejoresVendedores.at(r).lista.at(v)) + ", ";
-                }
-
-            }
-        
-        }
-
-        else{
-            cout << "El mejor vendedor fue: " << NombreVendedor(mejoresVendedores.at(r).lista.at(0)) << '\n';
-        }
+        MostrarMejoresVendedores(mejoresVendedores, r);
+        MostrarMejoresMeses(mejoresMeses, r);
 
         cout << "\n\n-----------------------------------\n\n";
     }
@@ -286,6 +312,56 @@ void MostrarEstadisticas(const Data& data, const MejoresVendedores& mejoresVende
 
 int PromedioVentas (const Data& data, int region, int vendedor){
 
-    return TotalDeVentas(data, region, vendedor)/12;
+    return TotalDeVentasRegionVendedor(data, region, vendedor)/12;
+
+}
+
+void MostrarMejoresVendedores (const MejoresVendedores& mejoresVendedores, int region){
+
+    if(mejoresVendedores.at(region).contador>1){ //si hay mas de uno
+
+        cout << "\t\tLos mejores vendedores fueron: ";
+
+        for(int v{} ; v < mejoresVendedores.at(region).contador ; ++v){
+
+            if(v == mejoresVendedores.at(region).contador-1){
+                cout << NombreVendedor(mejoresVendedores.at(region).lista.at(v)) + '\n';
+            }
+            else{
+                cout << NombreVendedor(mejoresVendedores.at(region).lista.at(v)) + ", ";
+            }
+
+        }
+
+    }
+
+    else{
+        cout << "\t\tEl mejor vendedor fue: " << NombreVendedor(mejoresVendedores.at(region).lista.at(0)) << '\n';
+    }
+
+}
+
+void MostrarMejoresMeses (const MejoresVendedores& mejoresMeses, int region){
+
+    if(mejoresMeses.at(region).contador>1){ //si hay mas de uno
+
+        cout << "\t\tLos mejores meses fueron: ";
+
+        for(int m{} ; m < mejoresMeses.at(region).contador ; ++m){
+
+            if(m == mejoresMeses.at(region).contador-1){
+                cout << NombreMes(mejoresMeses.at(region).lista.at(m)) + '\n';
+            }
+            else{
+                cout << NombreMes(mejoresMeses.at(region).lista.at(m)) + ", ";
+            }
+
+        }
+
+    }
+
+    else{
+        cout << "\t\tEl mejor mes fue: " << NombreMes(mejoresMeses.at(region).lista.at(0)) << '\n';
+    }
 
 }
