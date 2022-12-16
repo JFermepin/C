@@ -15,17 +15,8 @@
 
 #define DATA_BIN_FILE "data.bin"
 
-#define TABLE_COL_NAME_SIZE 17
+#define TABLE_COL_NAME_SIZE 25
 #define TABLE_COL_MONTH_SIZE 12
-
-/*************
-***	MACROS ***
-**************/
-
-#define GetSalesSumAmountByRegion(data, region) GetSalesSumAmount(data, region, -1, -1)
-#define GetSalesSumAmountBySeller(data, seller) GetSalesSumAmount(data, -1, seller, -1)
-#define GetSalesSumAmountByMonth(data, month) GetSalesSumAmount(data, -1, -1, month)
-#define GetSalesSumAmountBySellerMonth(data, seller, month) GetSalesSumAmount(data, -1, seller, month)
 
 /*************
 ***	USINGS ***
@@ -62,6 +53,7 @@ string GetSellerName(int seller);
 int GetSalesSumAmount(const Data&, int = -1, int = -1, int = -1);
 unsigned GetSalesSumAmountByRegionSeller(const Data&, int, int);
 unsigned GetSalesSumAmountByRegionMonth(const Data&, int, int);
+unsigned GetSalesSumAmountByRegion(const Data&, int);
 
 array<BestSeller,4> GetBestSellers(const Data&);
 array<BestSeller,4> GetBestMonths(const Data&);
@@ -108,9 +100,20 @@ bool LoadBinData(Data &data, Sales& sellerSales)
 	try
 	{
 		file.open(DATA_BIN_FILE, ios::in | ios::binary);
+
+		unsigned sales{};
+		file.read(reinterpret_cast<char *>(&sales), sizeof(unsigned));
+
+		for (unsigned i{}; i < sales; i++)
+		{
+			int amount{};
+			file.read(reinterpret_cast<char *>(&amount), sizeof(int));
+			sellerSales.push_back(amount);
+		}
+
 		file.read(reinterpret_cast<char *>(&data), sizeof(data));
-		file.read(reinterpret_cast<char *>(&sellerSales), sizeof(sellerSales));
 		file.close();
+
 	}
 	catch (int error)
 	{
@@ -129,9 +132,13 @@ void SaveBinData(Data &data, Sales& sellerSales)
 
 	file.open(DATA_BIN_FILE, ios::out | ios::binary);
 
-	file.write(reinterpret_cast<char *>(&data), sizeof(data));
-	file.write(reinterpret_cast<char *>(&sellerSales), sizeof(sellerSales));
+	unsigned sales = sellerSales.size();
+	file.write(reinterpret_cast<char *>(&sales), sizeof(unsigned));
 
+	for (auto amount : sellerSales)
+		file.write(reinterpret_cast<char *>(&amount), sizeof(int));
+
+	file.write(reinterpret_cast<char *>(&data), sizeof(data));
 	file.close();
 
 	cout << "The file <" << DATA_BIN_FILE << "> used <" << size << "> bytes.\n";
@@ -237,6 +244,15 @@ unsigned GetSalesSumAmountByRegionMonth(const Data &data, int region, int month)
     return total;
 }
 
+unsigned GetSalesSumAmountByRegion(const Data &data, int region)
+{
+	unsigned total{};
+	for(int seller{} ; seller < 3 ; seller++)
+		for(int month{} ; month < 12 ; month++)
+        	total += data.at(region).at(seller).at(month);
+    return total;
+}
+
 array<BestSeller,4> GetBestSellers(const Data &data)
 {
 	array<BestSeller,4> bestSellers{};
@@ -317,14 +333,13 @@ void PrintBestMonths(const array<BestSeller,4> bestMonths, int region)
 
 void PrintStatistics(const Data &data, const Sales& sellerSales)
 {
-	/*
+
 	cout << "Sales for the region 1, seller 1: [";
 	for (unsigned ix{}; ix < sellerSales.size(); ix++)
 	{
 		cout << (ix > 0 ? ", " : "") << sellerSales.at(ix);
 	}
 	cout << "]\n\n";
-	*/
 
 	array<BestSeller,4> bestSellers = GetBestSellers(data);
 	array<BestSeller,4> bestMonths = GetBestMonths(data);
@@ -359,10 +374,10 @@ void PrintTable(const Data &data, int ix_region)
 	for (int i{}; i < 12; i++)
 		cout << " | " << FixedLengthString(GetMonthName(i + 1), TABLE_COL_MONTH_SIZE);
 
-	cout << " | " << FixedLengthString("Total", TABLE_COL_MONTH_SIZE) << "\t";
+	cout << " | " << FixedLengthString("Total", TABLE_COL_MONTH_SIZE) << "\n\t";
 
 	// Print div line
-	for (int i{}; i < (TABLE_COL_NAME_SIZE + 13 * (TABLE_COL_MONTH_SIZE + 3) - 5); i++)
+	for (int i{}; i < (TABLE_COL_NAME_SIZE + 13 * (TABLE_COL_MONTH_SIZE + 3)); i++)
 		cout << "-";
 	cout << "\n";
 
@@ -374,12 +389,12 @@ void PrintTable(const Data &data, int ix_region)
 		{
 			cout << " | $" << FixedLengthString(to_string(GetSalesSumAmount(data, ix_region, ix_seller, ix_month)), (TABLE_COL_MONTH_SIZE - 1));
 		}
-		cout << " | $" << FixedLengthString(to_string(GetSalesSumAmountByRegionSeller(data, ix_region, ix_seller)), (TABLE_COL_MONTH_SIZE - 1));
+		cout << " | $" << FixedLengthString(to_string(GetSalesSumAmountByRegionSeller(data, ix_region, ix_seller)), (TABLE_COL_MONTH_SIZE - 1))<< "\n";
 	}
 
 	// Print div line
 	cout << "\t";
-	for (int i{}; i < (TABLE_COL_NAME_SIZE + 13 * (TABLE_COL_MONTH_SIZE + 3) - 5); i++)
+	for (int i{}; i < (TABLE_COL_NAME_SIZE + 13 * (TABLE_COL_MONTH_SIZE + 3)); i++)
 		cout << "-";
 	cout << "\n";
 

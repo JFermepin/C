@@ -40,12 +40,15 @@ using MejoresVendedores = array<MejorVendedor,4>;
 
 void CargarDatosDesdeTXT (Data&, MejoresVendedores&, Ventas&);
 void CargarDatosDesdeBIN (Data&, MejoresVendedores&, Ventas&);
+
 void CrearBin (Data&, MejoresVendedores&, Ventas&);
 void CrearTXT (const Data&, const MejoresVendedores&);
+
 unsigned TotalDeVentas(const Data&, int, int);
 int PromedioVentas (const Data&, int, int);
 void GuardarMejoresVendedores (Data&, MejoresVendedores&);
 void MostrarEstadisticas(const Data&, const MejoresVendedores&);
+
 string NombreRegion(int);
 string NombreMes(int);
 string NombreVendedor(int);
@@ -66,7 +69,7 @@ int main()
     MostrarEstadisticas(data, mejoresVendedores); 
 
     cout << "El primer vendedor hizo " << ventasPrimerVendedor.size() << " ventas: [";
-    for(int i ; i<ventasPrimerVendedor.size() ; i++)
+    for(int i{} ; i<ventasPrimerVendedor.size() ; i++)
         cout << (i > 0 ? ", " : "") << ventasPrimerVendedor.at(i);
     cout << "]";
 
